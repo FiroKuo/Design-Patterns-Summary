@@ -1,5 +1,5 @@
 ### 前言
-上个版本修复了Android端图片选择框架`saic-takephoto`中的几个问题，其中有一个bug涉及到权限问题。H5通过桥接方法`chooseImage`拉起原生相册，进而调用`saic-takephoto`库完成相册选择或拍照。client端并没有主动发起权限校验，那肯定就是lib中做的了！跟随**方法调用**深入到lib中，却完全不见权限申请的影子！这使我顿时来了兴趣，随即阅读了下源代码，发现lib中的权限申请是通过`动态代理`来做的，顿时拨云见日。于是决定分享一下`saic-takephoto`的源代码，*算是对动态代理设计模式的一个补充*。
+上个版本修复了Android端图片选择框架`takephoto`中的几个问题，其中有一个bug涉及到权限问题。H5通过桥接方法`chooseImage`拉起原生相册，进而调用`takephoto`库完成相册选择或拍照。client端并没有主动发起权限校验，那肯定就是lib中做的了！跟随**方法调用**深入到lib中，却完全不见权限申请的影子！这使我顿时来了兴趣，随即阅读了下源代码，发现lib中的权限申请是通过`动态代理`来做的，顿时拨云见日。于是决定分享一下`takephoto`的源代码，*算是对动态代理设计模式的一个补充*。
 ### 1. 入口ChoosePicActivity.launchChoosePic
 ```
 ChoosePicActivity.launchChoosePic(
@@ -158,7 +158,7 @@ public static Intent getPickMultipleIntent(TContextWrap contextWrap, int limit) 
 `TContextWrap`类代表着上下文`Context`，是对`Activity`和`Fragment`的包装，之所以有`Fragment`的选项是因为`startActivityForResult`可以从`Fragment`中发起，此时会回到Fragment的`onActivityResult`方法中。
 `TIntentWap`包装了`Intent`和`requestCode`。
 ### 3. AlbumSelectActivity & ImageSelectActivity
-到这里其实来到了另一个lib：`saic-multipleimageselect`，这个lib提供了自定义相册/图片选取的功能和UI——里面有两个重要的类分别是相册选择`AlbumSelectActivity`和图片选取`ImageSelectActivity`。`AlbumSelectActivity`中最重要的方法是`loadAlbums`:
+到这里其实来到了另一个lib：`multipleimageselect`，这个lib提供了自定义相册/图片选取的功能和UI——里面有两个重要的类分别是相册选择`AlbumSelectActivity`和图片选取`ImageSelectActivity`。`AlbumSelectActivity`中最重要的方法是`loadAlbums`:
 ```
  private void loadAlbums() {
         this.abortLoading();
